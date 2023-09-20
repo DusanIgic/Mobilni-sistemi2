@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/login">
+
+    <fragment
+        android:id="@+id/login"
+        android:name="com.example.mosis.Login"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/register" />
+        <action
+            android:id="@+id/action_login_to_map"
+            app:destination="@id/map" />
+    </fragment>
+    <fragment
+        android:id="@+id/register"
+        android:name="com.example.mosis.Register"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_register_to_login"
+            app:destination="@id/login" />
+        <action
+            android:id="@+id/action_register_to_map"
+            app:destination="@id/map" />
+    </fragment>
+    <fragment
+        android:id="@+id/map"
+        android:name="com.example.mosis.Map"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_map_to_addObject"
+            app:destination="@id/addObject" />
+        <action
+            android:id="@+id/action_map_to_leaderboard"
+            app:destination="@id/leaderboard" />
+        <action
+            android:id="@+id/action_map_to_login"
+            app:destination="@id/login" />
+        <action
+            android:id="@+id/action_map_to_filter"
+            app:destination="@id/filter" />
+        <argument
+            android:name="razdfil"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="filaut"
+            app:argType="string"
+            android:defaultValue="qazwsx" />
+    </fragment>
+    <fragment
+        android:id="@+id/addObject"
+        android:name="com.example.mosis.AddObject"
+        android:label="fragment_add_object"
+        tools:layout="@layout/fragment_add_object" >
+        <action
+            android:id="@+id/action_addObject_to_map"
+            app:destination="@id/map" />
+        <action
+            android:id="@+id/action_addObject_to_map2"
+            app:destination="@id/map" />
+    </fragment>
+    <fragment
+        android:id="@+id/leaderboard"
+        android:name="com.example.mosis.Leaderboard"
+        android:label="fragment_leaderboard"
+        tools:layout="@layout/fragment_leaderboard" >
+        <action
+            android:id="@+id/action_leaderboard_to_map"
+            app:destination="@id/map" />
+        <argument
+            android:name="filaut"
+            app:argType="string"
+            android:defaultValue='qazwsx' />
+        <argument
+            android:name="filraz"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/filter"
+        android:name="com.example.mosis.Filter"
+        android:label="fragment_filter"
+        tools:layout="@layout/fragment_filter" >
+        <action
+            android:id="@+id/action_filter_to_map"
+            app:destination="@id/map" />
+    </fragment>
+</navigation>

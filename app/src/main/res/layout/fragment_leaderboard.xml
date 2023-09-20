@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".Leaderboard">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="50dp"
+        >
+        <TextView
+            android:id="@+id/le_ime"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewEnd"
+            android:layout_gravity="center_vertical|end"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            android:textSize="25sp"
+            android:layout_weight="0"
+            android:text="NAME:"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/le_skor"
+            android:textStyle="bold"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewEnd"
+            android:layout_gravity="center_vertical|end"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            android:textSize="25dp"
+            android:layout_weight="0"
+            android:text="SCORE:"
+
+            />
+</LinearLayout>
+
+        <ListView
+            android:id="@+id/mobile_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </ListView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_backleaderboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/baseline_arrow_back_24"
+            app:layout_anchor="@id/mobile_list"
+            app:layout_anchorGravity="bottom|right|end"
+            />
+
+
+
+</LinearLayout>

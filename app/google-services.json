@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "478194046322",
+    "project_id": "mosis-95c12",
+    "storage_bucket": "mosis-95c12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478194046322:android:e19e43c905d5b84cecf9eb",
+        "android_client_info": {
+          "package_name": "com.example.mosis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDblC-USOb3ONx2nvbC9hymVAToD7cB6SU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
