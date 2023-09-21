@@ -36,15 +36,15 @@ class Filter : Fragment() {
             if(binding.filterautor.text.toString() != "" && binding.filterazdaljina.text.toString() != ""){
                 val fila = binding.filterautor.text.toString()
                 val filraz = binding.filterazdaljina.text.toString().toInt()
-                findNavController().navigate(FilterDirections.actionFilterToMap( filraz, fila))
+                findNavController().navigate(FilterDirections.actionFilterToMap( razdfil = filraz, filaut = fila))
             }
             else if(binding.filterautor.text.toString() != "") {
                 val fila = binding.filterautor.text.toString()
-                findNavController().navigate(FilterDirections.actionFilterToMap( 0, fila))
+                findNavController().navigate(FilterDirections.actionFilterToMap( razdfil = 0, filaut = fila))
             }
             else if (binding.filterazdaljina.text.toString() != "") {
                 val filraz = binding.filterazdaljina.text.toString().toInt()
-                findNavController().navigate(FilterDirections.actionFilterToMap( filraz, "qazwsx"))
+                findNavController().navigate(FilterDirections.actionFilterToMap( razdfil = filraz, filaut = "qazwsx"))
             }
             else{
                 findNavController().navigate(FilterDirections.actionFilterToMap())

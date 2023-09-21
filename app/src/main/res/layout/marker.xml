@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bubble_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@drawable/bonuspack_bubble" >
+    android:background="@drawable/bonuspack_bubble">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -39,15 +40,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/deponija"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center_vertical|left"
+                app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+                android:layout_weight="0"
+                android:src="@drawable/baseline_add_photo_alternate_24"
+                />
         </LinearLayout>
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/bubble_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:layout_margin="4dp"
-            android:src="@drawable/baseline_add_photo_alternate_24"
-            />
+
         <TextView android:id="@+id/bubble_subdescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

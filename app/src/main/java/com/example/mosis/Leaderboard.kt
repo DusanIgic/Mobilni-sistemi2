@@ -1,15 +1,18 @@
 package com.example.mosis
 
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.example.mosis.databinding.FragmentLeaderboardBinding
 import com.example.mosis.databinding.FragmentLoginBinding
 import com.google.firebase.firestore.DocumentSnapshot
@@ -73,6 +76,7 @@ class Leaderboard : Fragment() {
                         listItem =
                             LayoutInflater.from(context).inflate(R.layout.list_row, parent, false)
                     }
+                    listItem?.findViewById<ImageView>(R.id.profil)?.load(Uri.parse(items[position].data!!["photoUri"] as String))
                     listItem?.findViewById<TextView>(R.id.name_leaderboard)?.text =
                         items[position].data!!["displayName"] as String
                     listItem?.findViewById<TextView>(R.id.leaderboard_score)?.text =

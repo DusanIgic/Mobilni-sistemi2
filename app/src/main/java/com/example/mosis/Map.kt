@@ -13,12 +13,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import coil.load
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
-import coil.load
 import com.example.mosis.databinding.FragmentMapBinding
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import okhttp3.internal.wait
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -70,59 +71,6 @@ class Map : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val ctx: Context? = requireActivity().applicationContext
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx!!))
-        if(ActivityCompat.checkSelfPermission(requireActivity(),android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireActivity(),android.Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
-            registerForActivityResult(ActivityResultContracts.RequestPermission()){
-                    isGranted:Boolean->
-                if(isGranted){
-                    setMyLocationOverlay()
-                    LocationServices.getFusedLocationProviderClient(requireContext()).lastLocation.addOnSuccessListener {
-                        lokacija = it
-                        mapa.controller.setZoom(15.0)
-                        mapa.controller.setCenter(GeoPoint(lokacija!!.latitude, lokacija!!.longitude))
-                    }
-                }
-            }.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-        }else {
-            setMyLocationOverlay()
-            LocationServices.getFusedLocationProviderClient(requireContext()).lastLocation.addOnSuccessListener {
-                lokacija = it
-                mapa.controller.setZoom(15.0)
-                mapa.controller.setCenter(GeoPoint(lokacija!!.latitude, lokacija!!.longitude))
-
-            }
-        }
-            binding.addObject.setOnClickListener {
-                findNavController().navigate(R.id.action_map_to_addObject)
-            }
-            val bundle = arguments
-            if (bundle != null) {
-                val args = MapArgs.fromBundle(bundle)
-                binding.btnLeaderboard.setOnClickListener() {
-                    findNavController().navigate(
-                        MapDirections.actionMapToLeaderboard(
-                            args.filaut,
-                            args.razdfil
-                        )
-                    )
-                }
-            }
-            else{
-                binding.btnLeaderboard.setOnClickListener(){
-                    findNavController().navigate(R.id.action_map_to_leaderboard)
-                }
-            }
-
-            binding.btnLogout.setOnClickListener() {
-                Firebase.auth.signOut()
-                findNavController().navigate(R.id.action_map_to_login)
-            }
-            binding.btnMapFilter.setOnClickListener() {
-                findNavController().navigate(R.id.action_map_to_filter)
-            }
-
 
         baza.collection("posts").get().addOnSuccessListener {
             for(doc in it!!){
@@ -132,8 +80,11 @@ class Map : Fragment() {
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 marker.title = doc.data!!["desc"] as String
                 marker.icon = ResourcesCompat.getDrawable(resources, R.drawable.baseline_delete_24, null)
+//                marker.icon = load(Uri.parse(doc.data!!["imageUri"] as String))
                 marker.infoWindow = object: MarkerInfoWindow(R.layout.marker, mapa){
                     init{
+
+
                         var da = false
                         baza.collection("users").document(auth.currentUser?.uid!!).get().addOnSuccessListener {
 
@@ -152,56 +103,65 @@ class Map : Fragment() {
                         else{
                             button.setHint("Ne idem")
                         }
-
                         button.setOnClickListener() {
-                            val dist1 = FloatArray(1)
-                            Location.distanceBetween(
-                                lokacija!!.latitude,
-                                lokacija!!.longitude,
-                                marker.position.latitude,
-                                marker.position.longitude,
-                                dist1
-                            )
-                            if (dist1[0] < 300) {
+                            if (lokacija != null) {
 
-                                if (da) {
-                                    baza.collection("users").document(auth.currentUser?.uid!!).get()
-                                        .addOnSuccessListener {
-                                            val svi = it.data!!["posts"] as ArrayList<String>
-                                            svi.remove(doc.id)
+                                val dist1 = FloatArray(1)
+                                Location.distanceBetween(
+                                    lokacija!!.latitude,
+                                    lokacija!!.longitude,
+                                    marker.position.latitude,
+                                    marker.position.longitude,
+                                    dist1
+                                )
+                                if (dist1[0] < 300) {
+                                    Log.d("distanca", dist1[0].toString())
+                                    if (da) {
+                                        baza.collection("users").document(auth.currentUser?.uid!!)
+                                            .get()
+                                            .addOnSuccessListener {
+                                                val svi = it.data!!["posts"] as ArrayList<String>
+                                                svi.remove(doc.id)
 
-                                            baza.collection("users")
-                                                .document(auth.currentUser?.uid!!)
-                                                .update("posts", (svi))
-                                            baza.collection("users")
-                                                .document(auth.currentUser?.uid!!)
-                                                .update("score", (it.data!!["score"] as Long) - 2L)
-                                        }
-                                    button.setHint("Ne idem")
-                                    da = !da
-                                } else {
-                                    baza.collection("users").document(auth.currentUser?.uid!!).get()
-                                        .addOnSuccessListener {
-                                            baza.collection("users")
-                                                .document(auth.currentUser?.uid!!).update(
-                                                    "posts",
-                                                    (it.data!!["posts"] as ArrayList<String>) + doc.id
-                                                )
-                                            baza.collection("users")
-                                                .document(auth.currentUser?.uid!!)
-                                                .update("score", (it.data!!["score"] as Long) + 2L)
-                                        }
-                                    button.setHint("Idem")
-                                    da = !da
+                                                baza.collection("users")
+                                                    .document(auth.currentUser?.uid!!)
+                                                    .update("posts", (svi))
+                                                baza.collection("users")
+                                                    .document(auth.currentUser?.uid!!)
+                                                    .update(
+                                                        "score",
+                                                        (it.data!!["score"] as Long) - 2L
+                                                    )
+                                            }
+                                        button.setHint("Ne idem")
+                                        da = !da
+                                    } else {
+                                        baza.collection("users").document(auth.currentUser?.uid!!)
+                                            .get()
+                                            .addOnSuccessListener {
+                                                baza.collection("users")
+                                                    .document(auth.currentUser?.uid!!).update(
+                                                        "posts",
+                                                        (it.data!!["posts"] as ArrayList<String>) + doc.id
+                                                    )
+                                                baza.collection("users")
+                                                    .document(auth.currentUser?.uid!!)
+                                                    .update(
+                                                        "score",
+                                                        (it.data!!["score"] as Long) + 2L
+                                                    )
+                                            }
+                                        button.setHint("Idem")
+                                        da = !da
+                                    }
                                 }
                             }
                         }
                         }
 
                     }
-
                 val bundle = arguments
-                if (bundle != null) {
+                if (bundle != null && lokacija != null) {
                     val args = MapArgs.fromBundle(bundle)
 
                         val dist = FloatArray(1)
@@ -223,6 +183,63 @@ class Map : Fragment() {
                     mapa.overlays.add(marker)
                 }
             }
+        }
+
+        val ctx: Context? = requireActivity().applicationContext
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx!!))
+        if(ActivityCompat.checkSelfPermission(requireActivity(),android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireActivity(),android.Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
+            registerForActivityResult(ActivityResultContracts.RequestPermission()){
+                    isGranted:Boolean->
+                if(isGranted){
+                    setMyLocationOverlay()
+                    LocationServices.getFusedLocationProviderClient(requireContext()).lastLocation.addOnSuccessListener {
+                        lokacija = it
+
+                    }
+                }
+            }.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        }else {
+            setMyLocationOverlay()
+            LocationServices.getFusedLocationProviderClient(requireContext()).lastLocation.addOnSuccessListener {
+                lokacija = it
+                if(lokacija != null){
+                    mapa.controller.setCenter(GeoPoint(lokacija!!.latitude, lokacija!!.longitude))
+                }
+                else{
+                    mapa.controller.setCenter(GeoPoint(43.3209, 21.8958))
+                }
+            }
+        }
+        mapa.controller.setZoom(15.0)
+
+        binding.addObject.setOnClickListener {
+            findNavController().navigate(R.id.action_map_to_addObject)
+        }
+        val bundle = arguments
+        if (bundle != null) {
+            val args = MapArgs.fromBundle(bundle)
+            binding.btnLeaderboard.setOnClickListener() {
+                findNavController().navigate(
+                    MapDirections.actionMapToLeaderboard(
+                        args.filaut,
+                        args.razdfil
+                    )
+                )
+            }
+        }
+        else{
+            binding.btnLeaderboard.setOnClickListener(){
+                findNavController().navigate(R.id.action_map_to_leaderboard)
+            }
+        }
+
+        binding.btnLogout.setOnClickListener() {
+            Firebase.auth.signOut()
+            findNavController().navigate(R.id.action_map_to_login)
+        }
+        binding.btnMapFilter.setOnClickListener() {
+            findNavController().navigate(R.id.action_map_to_filter)
         }
 
     }
